@@ -197,12 +197,14 @@ static void s_threaded_realloc_worker(void *user_data) {
         size_t old_size = size;
         size = rand() % 1024;
         if (old_size) {
-            AWS_FATAL_ASSERT(0 == memcmp(alloc, &thread_data->thread_idx, 1));
+            uint8_t expected_byte = (uint8_t)thread_data->thread_idx;
+            AWS_FATAL_ASSERT(0 == memcmp(alloc, &expected_byte, 1));
         }
         AWS_FATAL_ASSERT(0 == aws_mem_realloc(test_allocator, &alloc, old_size, size));
         /* If there was a value, make sure it's still there */
         if (old_size && size) {
-            AWS_FATAL_ASSERT(0 == memcmp(alloc, &thread_data->thread_idx, 1));
+            uint8_t expected_byte = (uint8_t)thread_data->thread_idx;
+            AWS_FATAL_ASSERT(0 == memcmp(alloc, &expected_byte, 1));
         }
         if (size) {
             memset(alloc, (int)thread_data->thread_idx, size);
